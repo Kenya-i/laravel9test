@@ -48,4 +48,19 @@ class PostListControllerTest extends TestCase
             ->assertDontSee('これは非公開のブログです')
             ->assertSee('これは公開済みのブログです');
     }
+
+    /** @test */
+    public function ブログの詳細画面が表示できる() {
+
+        $post = Post::factory()->create();
+        $this->get('posts/'.$post->id)
+            ->assertOk()
+            ->assertSee($post->title)
+            ->assertSee($post->user->name);
+    }
+
+    /** @test */
+    public function ブログで非公開のものは詳細画面は表示できない() {
+        
+    }   
 }
