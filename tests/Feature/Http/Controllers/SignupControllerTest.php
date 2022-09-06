@@ -51,8 +51,17 @@ class SignupControllerTest extends TestCase
     {
         $url = 'signup';
 
+        User::factory()->create(['email' => 'aaa@bbb.ccc']);
+
         $this->post($url, ['name' => ''])->assertInvalid(['name' => 'The name field is required.']);
         $this->post($url, ['name' => str_repeat('あ', 21)])->assertInvalid(['name' => 'The name must not be greater than 20 characters.']);
         $this->post($url, ['name' => str_repeat('あ', 20)])->assertValid(['name' => 'The name must not be greater than 20 characters.']);
+
+        $this->post($url, ['email' => ''])->assertInvalid(['email' => 'The email field is required.']);
+        $this->post($url, ['email' => 'aa@bb@cc'])->assertInvalid(['email' => 'email']);
+        $this->post($url, ['email' => 'aaa@bbb.ccc'])->assertInvalid(['email' => 'The email has already been taken.']);
+        $this->post($url, ['password' => ''])->assertInvalid(['password' => 'password']);
+        $this->post($url, ['password' => 'abcd123'])->assertInvalid(['password' => 'The password must be at least 8 characters.']);
+        $this->post($url, ['password' => 'abcd1234'])->assertValid('password');
     }
 }
