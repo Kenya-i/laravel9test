@@ -6,7 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\Post;
-
+use Illuminate\Support\Carbon;
 
 class PostListControllerTest extends TestCase
 {
@@ -61,6 +61,28 @@ class PostListControllerTest extends TestCase
 
     /** @test */
     public function ブログで非公開のものは詳細画面は表示できない() {
-        
-    }   
+        $post = Post::factory()->closed()->create();
+
+        $this->get('posts/'.$post->id)
+        ->assertForbidden();
+
+    }
+
+    /** @test */
+    public function クリスマスの日はメリークリスマスと表示される() {
+        $post = Post::factory()->create();
+
+        Carbon::setTestNow('2020-12-24');
+
+        $this->get('posts/' . $post->id)
+            ->assertOk()
+            ->assertDontSee("メリークリスマス!");
+
+        Carbon::setTestNow('2020-12-25');
+
+        $this->get('posts/' . $post->id)
+            ->assertOk()
+            ->assertSee("メリークリスマス!");
+    }
+
 }
