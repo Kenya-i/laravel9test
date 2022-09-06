@@ -20,7 +20,8 @@ class CommentFactory extends Factory
         return [
             'post_id' => Post::factory(),
             'name' => $this->faker->name(),
-            'body' => $this->faker->realText()
+            'body' => $this->faker->realText(),
+            'created_at' => $this->faker->dateTimeBetween('-30days', '-1days')
         ];
     }
 }
