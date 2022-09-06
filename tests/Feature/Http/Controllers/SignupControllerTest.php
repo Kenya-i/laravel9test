@@ -45,4 +45,14 @@ class SignupControllerTest extends TestCase
 
         $this->assertTrue(Hash::check('hogehoge', $user->password));
     }
+
+    /** @test */
+    public function 不正なデータではユーザー登録できない()
+    {
+        $url = 'signup';
+
+        $this->post($url, ['name' => ''])->assertInvalid(['name' => 'The name field is required.']);
+        $this->post($url, ['name' => str_repeat('あ', 21)])->assertInvalid(['name' => 'The name must not be greater than 20 characters.']);
+        $this->post($url, ['name' => str_repeat('あ', 20)])->assertValid(['name' => 'The name must not be greater than 20 characters.']);
+    }
 }
