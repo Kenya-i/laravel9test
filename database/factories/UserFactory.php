@@ -26,6 +26,15 @@ class UserFactory extends Factory
         ];
     }
 
+    public function validData()
+    {
+        return [
+            'name' => fake()->name(),
+            'email' => fake()->safeEmail(),
+            'password' => 'hogehoge',
+        ];
+    }
+
     /**
      * Indicate that the model's email address should be unverified.
      *
