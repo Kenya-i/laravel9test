@@ -27,5 +27,7 @@ class SignupController extends Controller
             'email' => $request->input('email'),
             'password' => Hash::make($request->input('password')),
         ]);
+
+        return redirect()->route('postlist.index');
     }
 }

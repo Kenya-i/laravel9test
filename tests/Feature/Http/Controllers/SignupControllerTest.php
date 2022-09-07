@@ -34,7 +34,8 @@ class SignupControllerTest extends TestCase
         $validData = User::factory()->validData();
 
         $this->post('signup', $validData)
-            ->assertOk();
+            ->assertRedirect('/');
+            // ->assertOk();
 
         unset($validData['password']);
 
@@ -52,6 +53,12 @@ class SignupControllerTest extends TestCase
         $url = 'signup';
 
         User::factory()->create(['email' => 'aaa@bbb.ccc']);
+
+        $this->get('signup');
+
+        $this->post($url, [])
+            ->assertRedirect('signup');
+        // ＄request->validateでバリデーションをかけているためにpost時にデータがないと元画面にredirectする
 
         $this->post($url, ['name' => ''])->assertInvalid(['name' => 'The name field is required.']);
         $this->post($url, ['name' => str_repeat('あ', 21)])->assertInvalid(['name' => 'The name must not be greater than 20 characters.']);
