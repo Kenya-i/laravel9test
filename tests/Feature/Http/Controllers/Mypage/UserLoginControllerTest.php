@@ -8,6 +8,7 @@ use Tests\TestCase;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
 
 class UserLoginControllerTest extends TestCase
 {
@@ -72,17 +73,17 @@ class UserLoginControllerTest extends TestCase
     }
 
     /** @test */
-    public function 認証エラーなのでvalidationExceptionの例外が発生する() {
+    public function 認証エラーなのでvalidationExceptionの例外が発生する()
+    {
         $this->withoutExceptionHandling();
         $this->expectException(ValidationException::class);
         $this->post('mypage/login', [])
-        ->assertRedirect();
-
-
+            ->assertRedirect();
     }
 
     /** @test */
-    public function 認証OKなのでvalidationExceptionの例外が発生しない() {
+    public function 認証OKなのでvalidationExceptionの例外が発生しない()
+    {
         $this->withoutExceptionHandling();
 
         $user = User::factory()->create([
@@ -90,7 +91,7 @@ class UserLoginControllerTest extends TestCase
             'password' => \Hash::make('abcd1234')
         ]);
 
-        try{
+        try {
             $this->post('mypage/login', [
                 'email' => 'aaa@bbb.ccc',
                 'password' => 'abcd1234'
@@ -98,7 +99,19 @@ class UserLoginControllerTest extends TestCase
         } catch (ValidationException $e) {
             $this->fail('例外が発生してしまいました');
         }
+    }
 
+    /** @test */
+    public function ログアウトできる()
+    {
+        $this->login();
 
+        $this->post('mypage/logout')
+        ->assertRedirect('mypage/login');
+
+        $this->get('mypage/login')
+        ->assertSee('ログアウトしました');
+
+        $this->assertGuest();
     }
 }

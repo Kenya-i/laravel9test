@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Mypage;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserLoginController extends Controller
 {
@@ -17,7 +18,7 @@ class UserLoginController extends Controller
             'password' => ['required']
         ]);
 
-        if(\Auth::attempt($credential)) {
+        if(Auth::attempt($credential)) {
             $request->session()->regenerate();
 
             return redirect()->intended('mypage/posts');
@@ -26,5 +27,15 @@ class UserLoginController extends Controller
         return back()->withErrors([
             'email' => 'メールアドレスまたはパスワードが間違っています。'
         ])->withInput();
+    }
+
+    public function logout(Request $request) {
+        Auth::logout();
+
+        $request->session()->invalidate();
+
+        $request->session()->regenerateToken();
+
+        return redirect(route('login'))->with('status', 'ログアウトしました');
     }
 }
