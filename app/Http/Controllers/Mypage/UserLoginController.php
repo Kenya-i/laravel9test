@@ -22,5 +22,9 @@ class UserLoginController extends Controller
 
             return redirect()->intended('mypage/posts');
         }
+
+        return back()->withErrors([
+            'email' => 'メールアドレスまたはパスワードが間違っています。'
+        ])->withInput();
     }
 }

@@ -14,11 +14,12 @@ class UserLoginControllerTest extends TestCase
     public function ログイン画面を開ける()
     {
         $this->get('mypage/login')
-        ->assertOk();
+            ->assertOk();
     }
 
     /** @test */
-    public function ログイン時の入力チェック() {
+    public function ログイン時の入力チェック()
+    {
         $url = 'mypage/login';
 
         $this->from($url)->post($url, [])
@@ -32,7 +33,8 @@ class UserLoginControllerTest extends TestCase
     }
 
     /** @test */
-    public function ログインできる() {
+    public function ログインできる()
+    {
         $url = 'mypage/login';
 
         $user = User::factory()->create([
@@ -46,5 +48,25 @@ class UserLoginControllerTest extends TestCase
         ])->assertRedirect('mypage/posts');
 
         $this->assertAuthenticatedAs($user);
+    }
+
+    /** @test */
+    public function パスワードを間違えているのでログインできず、適切なエラーメッセージが表示されない()
+    {
+        $url = 'mypage/login';
+
+        $user = User::factory()->create([
+            'email' => 'aaa@bbb.ccc',
+            'password' => \Hash::make('abcd1234')
+        ]);
+
+        $this->from($url)->post($url, [
+            'email' => 'aaa@bbb.ccc',
+            'password' => '11112222'
+        ])->assertRedirect($url);
+
+        $this->get($url)
+            ->assertOk()
+            ->assertSee('メールアドレスまたはパスワードが間違っています。');
     }
 }
