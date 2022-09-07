@@ -12,9 +12,15 @@ class UserLoginController extends Controller
     }
 
     public function login(Request $request) {
-        $request->validate([
+        $credential = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required']
         ]);
+
+        if(\Auth::attempt($credential)) {
+            $request->session()->regenerate();
+
+            return redirect()->intended('mypage/posts');
+        }
     }
 }
