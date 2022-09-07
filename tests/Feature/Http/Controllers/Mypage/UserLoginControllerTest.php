@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class UserLoginControllerTest extends TestCase
 {
@@ -68,5 +69,36 @@ class UserLoginControllerTest extends TestCase
         $this->get($url)
             ->assertOk()
             ->assertSee('メールアドレスまたはパスワードが間違っています。');
+    }
+
+    /** @test */
+    public function 認証エラーなのでvalidationExceptionの例外が発生する() {
+        $this->withoutExceptionHandling();
+        $this->expectException(ValidationException::class);
+        $this->post('mypage/login', [])
+        ->assertRedirect();
+
+
+    }
+
+    /** @test */
+    public function 認証OKなのでvalidationExceptionの例外が発生しない() {
+        $this->withoutExceptionHandling();
+
+        $user = User::factory()->create([
+            'email' => 'aaa@bbb.ccc',
+            'password' => \Hash::make('abcd1234')
+        ]);
+
+        try{
+            $this->post('mypage/login', [
+                'email' => 'aaa@bbb.ccc',
+                'password' => 'abcd1234'
+            ])->assertRedirect();
+        } catch (ValidationException $e) {
+            $this->fail('例外が発生してしまいました');
+        }
+
+
     }
 }
