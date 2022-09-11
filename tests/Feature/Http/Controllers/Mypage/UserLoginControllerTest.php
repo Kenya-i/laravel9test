@@ -112,6 +112,6 @@ class UserLoginControllerTest extends TestCase
         $this->get('mypage/login')
         ->assertSee('ログアウトできました');
 
-        #$this->assertGuest();
+        $this->assertGuest();
     }
 }
